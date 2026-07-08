@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plan Volumen · 59→70kg</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0d0f0c;
+    --surface:#161a13;
+    --surface2:#1e241a;
+    --line:#2c3325;
+    --lime:#c6f24e;
+    --lime-dim:#8ba838;
+    --text:#eef2e6;
+    --muted:#8b9280;
+    --prot:#5ec8f2;
+    --carb:#f2a94e;
+    --fat:#f26b6b;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter',system-ui,sans-serif;
+    line-height:1.5;
+    padding-bottom:60px;
+  }
+  .wrap{max-width:760px;margin:0 auto;padding:0 16px}
+
+  /* HEADER */
+  header{
+    padding:34px 0 22px;
+    border-bottom:1px solid var(--line);
+    position:relative;
+    overflow:hidden;
+  }
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;letter-spacing:.28em;text-transform:uppercase;
+    color:var(--lime-dim);margin-bottom:10px;
+  }
+  h1{
+    font-family:'Anton',sans-serif;
+    font-weight:400;
+    font-size:clamp(38px,10vw,68px);
+    line-height:.92;
+    letter-spacing:.01em;
+    text-transform:uppercase;
+  }
+  h1 .arrow{color:var(--lime)}
+  .sub{color:var(--muted);font-size:14px;margin-top:12px;max-width:52ch}
+
+  /* WEIGHT TRACKER */
+  .weight-card{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:18px;
+    margin:22px 0;
+  }
+  .weight-top{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  .weight-label{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+  .weight-input-row{display:flex;align-items:center;gap:8px}
+  .weight-input-row input{
+    width:80px;background:var(--surface2);border:1px solid var(--line);
+    color:var(--text);font-family:'JetBrains Mono',monospace;font-weight:700;
+    font-size:18px;padding:8px 10px;border-radius:8px;text-align:center;
+  }
+  .weight-input-row input:focus{outline:2px solid var(--lime);outline-offset:1px}
+  .weight-input-row button{
+    background:var(--lime);color:#0d0f0c;border:none;font-weight:700;
+    font-size:13px;padding:9px 14px;border-radius:8px;cursor:pointer;font-family:'Inter';
+  }
+  .weight-input-row button:active{transform:scale(.96)}
+  .bar-track{height:12px;background:var(--surface2);border-radius:20px;margin-top:16px;overflow:hidden;position:relative}
+  .bar-fill{height:100%;background:linear-gradient(90deg,var(--lime-dim),var(--lime));border-radius:20px;transition:width .5s ease;width:0}
+  .bar-scale{display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);margin-top:6px}
+  .gained{color:var(--lime);font-weight:700}
+
+  /* TARGET STRIP */
+  .targets{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:22px 0}
+  .tcell{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 10px;text-align:center}
+  .tcell .n{font-family:'Anton',sans-serif;font-size:26px;line-height:1;color:var(--lime)}
+  .tcell .l{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:6px}
+  .tcell.prot .n{color:var(--prot)}
+  @media(max-width:520px){.targets{grid-template-columns:repeat(2,1fr)}}
+
+  /* DAY NAV */
+  .daynav{
+    display:flex;gap:6px;overflow-x:auto;padding:14px 0;margin:0 -16px;
+    padding-left:16px;padding-right:16px;
+    scrollbar-width:none;
+    position:sticky;top:0;background:var(--bg);z-index:20;
+    border-bottom:1px solid var(--line);
+  }
+  .daynav::-webkit-scrollbar{display:none}
+  .daychip{
+    flex:0 0 auto;min-width:46px;padding:8px 6px;border-radius:10px;
+    background:var(--surface);border:1px solid var(--line);text-align:center;cursor:pointer;
+    transition:.15s;
+  }
+  .daychip .dn{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:.1em}
+  .daychip .dd{font-family:'Anton',sans-serif;font-size:18px;margin-top:2px}
+  .daychip.active{background:var(--lime);border-color:var(--lime)}
+  .daychip.active .dn,.daychip.active .dd{color:#0d0f0c}
+  .daychip.done{border-color:var(--lime-dim)}
+  .daychip.done::after{content:"✓";display:block;font-size:9px;color:var(--lime-dim);margin-top:-2px}
+  .daychip.active.done::after{color:#0d0f0c}
+
+  /* DAY HEADER */
+  .dayhead{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:24px 0 4px;flex-wrap:wrap}
+  .dayhead h2{font-family:'Anton',sans-serif;font-weight:400;font-size:30px;text-transform:uppercase}
+  .daytag{font-family:'JetBrains Mono',monospace;font-size:11px;padding:4px 10px;border-radius:20px;letter-spacing:.05em}
+  .tag-gym{background:rgba(198,242,78,.14);color:var(--lime);border:1px solid var(--lime-dim)}
+  .tag-rest{background:var(--surface2);color:var(--muted);border:1px solid var(--line)}
+
+  /* DAY PROGRESS */
+  .dayprog{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:14px 0 22px}
+  .dp-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+  .dp-row:last-child{margin-bottom:0}
+  .dp-label{font-family:'JetBrains Mono',monospace;font-size:11px;width:56px;color:var(--muted);text-transform:uppercase}
+  .dp-track{flex:1;height:8px;background:var(--surface2);border-radius:10px;overflow:hidden}
+  .dp-bar{height:100%;border-radius:10px;transition:width .35s ease;width:0}
+  .dp-bar.kcal{background:var(--lime)}
+  .dp-bar.prot{background:var(--prot)}
+  .dp-val{font-family:'JetBrains Mono',monospace;font-size:11px;width:96px;text-align:right;color:var(--text)}
+
+  /* MEALS */
+  .meal{
+    background:var(--surface);border:1px solid var(--line);border-radius:14px;
+    margin-bottom:12px;overflow:hidden;transition:.2s;
+  }
+  .meal.checked{border-color:var(--lime-dim);background:var(--surface2)}
+  .meal-head{display:flex;align-items:flex-start;gap:14px;padding:16px;cursor:pointer;user-select:none}
+  .check{
+    flex:0 0 auto;width:26px;height:26px;border-radius:8px;border:2px solid var(--line);
+    background:transparent;margin-top:2px;display:grid;place-items:center;transition:.15s;
+  }
+  .meal.checked .check{background:var(--lime);border-color:var(--lime)}
+  .check svg{width:14px;height:14px;stroke:#0d0f0c;stroke-width:3.5;fill:none;opacity:0;transition:.15s}
+  .meal.checked .check svg{opacity:1}
+  .meal-info{flex:1;min-width:0}
+  .meal-slot{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--lime-dim)}
+  .meal-name{font-weight:700;font-size:16px;margin:3px 0 2px}
+  .meal.checked .meal-name{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--lime-dim)}
+  .meal-macros{display:flex;gap:12px;flex-wrap:wrap;margin-top:6px;font-family:'JetBrains Mono',monospace;font-size:11px}
+  .m-kcal{color:var(--lime)}
+  .m-p{color:var(--prot)}.m-c{color:var(--carb)}.m-f{color:var(--fat)}
+  .expand{flex:0 0 auto;color:var(--muted);transition:.2s;font-size:18px;line-height:1;margin-top:2px}
+  .meal.open .expand{transform:rotate(180deg)}
+  .meal-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+  .meal.open .meal-body{max-height:600px}
+  .meal-body-inner{padding:0 16px 16px 56px}
+  .ingredients{list-style:none;border-top:1px solid var(--line);padding-top:12px}
+  .ingredients li{font-size:13.5px;color:var(--text);padding:3px 0;display:flex;gap:8px}
+  .ingredients li::before{content:"·";color:var(--lime);font-weight:700}
+  .meal-tip{margin-top:10px;font-size:12.5px;color:var(--muted);font-style:italic;padding:8px 10px;background:var(--bg);border-radius:8px;border-left:2px solid var(--lime-dim)}
+
+  /* RESET */
+  .footer-actions{margin:34px 0 10px;display:flex;justify-content:center}
+  .reset-btn{background:transparent;border:1px solid var(--line);color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.1em;padding:10px 18px;border-radius:10px;cursor:pointer;text-transform:uppercase}
+  .reset-btn:active{transform:scale(.97)}
+
+  .creatine{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px dashed var(--lime-dim);border-radius:12px;padding:12px 16px;margin:14px 0 22px}
+  .creatine .cchk{flex:0 0 auto;width:24px;height:24px;border-radius:7px;border:2px solid var(--line);display:grid;place-items:center;cursor:pointer;transition:.15s}
+  .creatine.on .cchk{background:var(--lime);border-color:var(--lime)}
+  .creatine .cchk svg{width:13px;height:13px;stroke:#0d0f0c;stroke-width:3.5;fill:none;opacity:0}
+  .creatine.on .cchk svg{opacity:1}
+  .creatine .ctxt{font-size:13.5px}
+  .creatine .ctxt b{color:var(--lime)}
+  .creatine .ctxt span{display:block;color:var(--muted);font-size:11.5px;margin-top:1px}
+  .note{font-size:12px;color:var(--muted);text-align:center;margin-top:16px;line-height:1.6}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">Plan de volumen · Verano</div>
+    <h1>De 59 <span class="arrow">→</span> 70 kg</h1>
+    <p class="sub">Superávit calórico controlado · 5 comidas al día · 4 entrenos por semana. Marca cada comida y registra tu peso para ver el progreso.</p>
+  </header>
+
+  <!-- WEIGHT -->
+  <div class="weight-card">
+    <div class="weight-top">
+      <div>
+        <div class="weight-label">Peso actual</div>
+        <div style="font-family:'Anton';font-size:40px;line-height:1;margin-top:4px" id="curWeight">59<span style="font-size:20px;color:var(--muted)">kg</span></div>
+      </div>
+      <div class="weight-input-row">
+        <input type="number" id="wInput" step="0.1" placeholder="59.0" inputmode="decimal">
+        <button id="wSave">Guardar</button>
+      </div>
+    </div>
+    <div class="bar-track"><div class="bar-fill" id="wBar"></div></div>
+    <div class="bar-scale">
+      <span>59 kg</span>
+      <span class="gained" id="wGained">+0 kg</span>
+      <span>70 kg</span>
+    </div>
+  </div>
+
+  <!-- TARGETS -->
+  <div class="targets">
+    <div class="tcell"><div class="n">3300</div><div class="l">kcal / día</div></div>
+    <div class="tcell prot"><div class="n">140</div><div class="l">g proteína</div></div>
+    <div class="tcell"><div class="n">400</div><div class="l">g carbos</div></div>
+    <div class="tcell"><div class="n">95</div><div class="l">g grasas</div></div>
+  </div>
+
+</div>
+
+<!-- DAY NAV (sticky) -->
+<div class="daynav" id="dayNav"></div>
+
+<div class="wrap">
+  <div class="dayhead">
+    <h2 id="dayTitle">Día 1</h2>
+    <span class="daytag" id="dayTag"></span>
+  </div>
+
+  <div class="dayprog">
+    <div class="dp-row">
+      <span class="dp-label">Kcal</span>
+      <div class="dp-track"><div class="dp-bar kcal" id="progKcal"></div></div>
+      <span class="dp-val" id="valKcal">0 / 3300</span>
+    </div>
+    <div class="dp-row">
+      <span class="dp-label">Prot</span>
+      <div class="dp-track"><div class="dp-bar prot" id="progProt"></div></div>
+      <span class="dp-val" id="valProt">0 / 140g</span>
+    </div>
+  </div>
+
+  <div class="creatine" id="creatine">
+    <div class="cchk"><svg viewBox="0 0 24 24"><polyline points="4 12 10 18 20 6"></polyline></svg></div>
+    <div class="ctxt"><b>Creatina · 5 g</b><span>Tómala hoy, da igual la hora. También en días de descanso.</span></div>
+  </div>
+
+  <div id="meals"></div>
+
+  <div class="footer-actions">
+    <button class="reset-btn" id="resetDay">Reiniciar día</button>
+  </div>
+
+  <p class="note">
+    El plan rota en un ciclo de 7 días que se repite todo el mes.<br>
+    <strong style="color:var(--lime)">Creatina: 5 g todos los días</strong> (también en descanso), a cualquier hora.<br>
+    Bebe 3 L de agua/día · duerme 8 h · progresa cargas en el gym.<br>
+    Si a las 2 semanas no subes ~1 kg, añade 300 kcal más.
+  </p>
+</div>
+
+<script>
+// ---------- MEAL PLAN DATA (7-day rotating cycle) ----------
+const DAYS = [
+  {name:"Día 1", type:"gym", meals:[
+    {slot:"Desayuno", name:"Avena proteica + plátano", kcal:620, p:32, c:82, f:16,
+      ing:["100g avena","400ml leche entera","1 scoop proteína","1 plátano","30g mantequilla de cacahuete","Canela"],
+      tip:"Cocina la avena con la leche, remueve la proteína al final fuera del fuego."},
+    {slot:"Media mañana", name:"Bocata de pavo y aguacate", kcal:540, p:30, c:52, f:22,
+      ing:["Pan integral (2 rebanadas grandes)","100g pavo/pollo","1/2 aguacate","Queso","Tomate"],
+      tip:"Cómelo entre desayuno y comida, no te lo saltes aunque no tengas hambre."},
+    {slot:"Comida", name:"Arroz al curry con pollo y huevo", kcal:780, p:52, c:88, f:20,
+      ing:["120g arroz (crudo)","200g pollo troceado","2 huevos","Salsa de curry con leche de coco","Pimiento y cebolla","AOVE"],
+      tip:"El plato más grande del día. El curry con coco lo hace mucho más sabroso que el pollo a la plancha soso."},
+    {slot:"Post-entreno", name:"Batido recuperador", kcal:430, p:40, c:55, f:5,
+      ing:["1 scoop proteína","400ml leche","1 plátano","40g avena","Miel (1 cda)"],
+      tip:"Tómalo en los 30-45 min tras entrenar. Días de gym es clave."},
+    {slot:"Cena", name:"Salmón + patata + verduras", kcal:700, p:42, c:60, f:30,
+      ing:["180g salmón","250g patata","Brócoli/espárragos","Aceite de oliva","Frutos secos (puñado)"],
+      tip:"Grasas buenas del salmón y frutos secos suben calorías sin llenar de más."}
+  ]},
+  {name:"Día 2", type:"gym", meals:[
+    {slot:"Desayuno", name:"Tostadas + huevos revueltos", kcal:640, p:34, c:60, f:28,
+      ing:["3 rebanadas pan integral","3 huevos","50g queso","Aguacate","Tomate y AOVE"],
+      tip:"Revuelve los huevos con un chorrito de leche para más volumen y cremosidad."},
+    {slot:"Media mañana", name:"Yogur griego + granola + frutos secos", kcal:520, p:28, c:48, f:24,
+      ing:["2 yogures griegos","60g granola","30g nueces/almendras","Miel","Arándanos"],
+      tip:"El yogur griego mete proteína fácil. Añade la miel si te falta apetito."},
+    {slot:"Comida", name:"Pasta boloñesa de ternera", kcal:820, p:48, c:95, f:24,
+      ing:["120g pasta (cruda)","180g carne picada de ternera","Salsa de tomate","Queso rallado","AOVE"],
+      tip:"La pasta con carne es de las formas más fáciles de meter muchas calorías."},
+    {slot:"Post-entreno", name:"Batido recuperador", kcal:430, p:40, c:55, f:5,
+      ing:["1 scoop proteína","400ml leche","1 plátano","40g avena","Miel"],
+      tip:"Ventana post-entreno: proteína + carbos rápidos."},
+    {slot:"Cena", name:"Bowl de pollo teriyaki con quinoa", kcal:660, p:46, c:58, f:24,
+      ing:["200g pollo en dados","100g quinoa (cruda)","Salsa teriyaki","Pimiento, calabacín y edamame","Aguacate","Sésamo y AOVE"],
+      tip:"El teriyaki convierte un pollo soso en algo que apetece. Cena completa y digestiva."}
+  ]},
+  {name:"Día 3", type:"rest", meals:[
+    {slot:"Desayuno", name:"Tortitas de avena y plátano", kcal:600, p:34, c:70, f:18,
+      ing:["80g avena","2 huevos","1 plátano","1 scoop proteína","Mantequilla de cacahuete por encima"],
+      tip:"Tritura todo y a la sartén. Día de descanso pero sigue el superávit."},
+    {slot:"Media mañana", name:"Sándwich de atún", kcal:500, p:34, c:46, f:20,
+      ing:["Pan integral (2 reb.)","2 latas de atún","Mayonesa","Maíz","Tomate"],
+      tip:"El atún es proteína barata y práctica."},
+    {slot:"Comida", name:"Lentejas con arroz y chorizo", kcal:760, p:38, c:96, f:22,
+      ing:["150g lentejas (cocidas)","80g arroz","Chorizo/panceta","Verduras del guiso","Pan"],
+      tip:"Legumbre + cereal = proteína completa. Plato tradicional y muy calórico."},
+    {slot:"Merienda", name:"Tostada + queso + batido", kcal:520, p:36, c:52, f:16,
+      ing:["2 tostadas","Queso fresco/curado","1 scoop proteína en 300ml leche","Miel"],
+      tip:"En día de descanso mantén las 5 comidas igual."},
+    {slot:"Cena", name:"Tortilla de patata + ensalada", kcal:720, p:32, c:60, f:38,
+      ing:["3 huevos","2 patatas medianas","Cebolla","AOVE generoso","Ensalada con aguacate"],
+      tip:"La tortilla de patata bien cargada es un bombazo calórico."}
+  ]},
+  {name:"Día 4", type:"gym", meals:[
+    {slot:"Desayuno", name:"Bowl de avena + claras", kcal:610, p:38, c:74, f:16,
+      ing:["90g avena","400ml leche","1 scoop proteína","Fresas/frutos rojos","30g mantequilla de cacahuete"],
+      tip:"Añade fruta para vitaminas y un extra de carbos."},
+    {slot:"Media mañana", name:"Bagel de pavo y queso", kcal:530, p:32, c:56, f:18,
+      ing:["1 bagel/pan grande","100g pavo","Queso","Aguacate","Tomate"],
+      tip:"Snack denso y transportable si estás fuera."},
+    {slot:"Comida", name:"Ternera salteada estilo asiático con arroz", kcal:800, p:50, c:90, f:24,
+      ing:["180g ternera en tiras","120g arroz","Salsa de soja y jengibre","Brócoli y pimiento","AOVE","Huevo frito encima"],
+      tip:"Saltea la ternera a fuego fuerte con soja y jengibre. El huevo frito suma +90 kcal fáciles."},
+    {slot:"Post-entreno", name:"Batido recuperador", kcal:430, p:40, c:55, f:5,
+      ing:["1 scoop proteína","400ml leche","1 plátano","40g avena","Miel"],
+      tip:"No falles la ventana post-entreno."},
+    {slot:"Cena", name:"Merluza al horno con patata panadera", kcal:640, p:44, c:56, f:22,
+      ing:["200g merluza","250g patata en rodajas","Ajo, perejil y limón","Cebolla y pimiento","AOVE generoso","Puñado de almendras"],
+      tip:"Al horno con ajo y limón queda mucho más jugosa que hervida. La patata panadera absorbe el sabor."}
+  ]},
+  {name:"Día 5", type:"gym", meals:[
+    {slot:"Desayuno", name:"French toast proteico", kcal:650, p:34, c:68, f:26,
+      ing:["3 reb. pan brioche/integral","2 huevos + leche","1 scoop proteína","Plátano","Sirope/miel"],
+      tip:"Empapa el pan en huevo+leche+proteína y a la sartén."},
+    {slot:"Media mañana", name:"Requesón + frutos secos + miel", kcal:500, p:34, c:36, f:24,
+      ing:["250g requesón/queso batido","40g nueces","Miel","1 manzana"],
+      tip:"Proteína de digestión lenta, ideal a media mañana."},
+    {slot:"Comida", name:"Fajitas de pollo", kcal:810, p:50, c:88, f:26,
+      ing:["200g pollo","3 tortillas de trigo","Pimiento y cebolla","Queso","Guacamole"],
+      tip:"Monta 3 fajitas bien llenas. Fácil de comer aunque estés lleno."},
+    {slot:"Post-entreno", name:"Batido recuperador", kcal:430, p:40, c:55, f:5,
+      ing:["1 scoop proteína","400ml leche","1 plátano","40g avena","Miel"],
+      tip:"Rutina post-entreno de siempre."},
+    {slot:"Cena", name:"Hamburguesa casera + boniato", kcal:700, p:42, c:56, f:32,
+      ing:["180g carne picada","Pan de hamburguesa","Queso","Boniato al horno","Ensalada"],
+      tip:"Casera y con boniato para carbos de calidad."}
+  ]},
+  {name:"Día 6", type:"rest", meals:[
+    {slot:"Desayuno", name:"Tostadas de aguacate y huevo", kcal:620, p:30, c:56, f:32,
+      ing:["3 tostadas integrales","2 huevos poché","1 aguacate","Queso","AOVE y semillas"],
+      tip:"Brunch de finde pero sin bajar calorías."},
+    {slot:"Media mañana", name:"Smoothie denso", kcal:540, p:34, c:64, f:14,
+      ing:["1 scoop proteína","400ml leche","Avena 40g","Plátano + fresas","Mantequilla de cacahuete"],
+      tip:"Si te cuesta comer sólido, los líquidos calóricos salvan el día."},
+    {slot:"Comida", name:"Fideuá de marisco con alioli", kcal:820, p:46, c:98, f:22,
+      ing:["120g fideos","Gambas, calamar y mejillones","Sofrito de tomate y ajo","Caldo de pescado","AOVE + alioli casero"],
+      tip:"Solo marisco, sin mezclar con pollo. El alioli sube calorías y sabor. Comilona de finde, repite plato."},
+    {slot:"Merienda", name:"Bocata de tortilla francesa", kcal:520, p:28, c:50, f:22,
+      ing:["Pan (2 reb. grandes)","Tortilla de 3 huevos","Queso","AOVE"],
+      tip:"Clásico español, rápido y calórico."},
+    {slot:"Cena", name:"Pizza casera con extra proteína", kcal:760, p:40, c:80, f:28,
+      ing:["Base de pizza","Pollo/atún/jamón","Extra de queso","Verduras","Orégano"],
+      tip:"Hazla casera para controlar y meter más topping proteico."}
+  ]},
+  {name:"Día 7", type:"rest", meals:[
+    {slot:"Desayuno", name:"Gofres proteicos + fruta", kcal:600, p:32, c:70, f:20,
+      ing:["Masa con avena + huevo + proteína","Plátano","Miel/sirope","Frutos secos","Yogur"],
+      tip:"Domingo tranquilo, mantén el ritmo de comidas."},
+    {slot:"Media mañana", name:"Yogur griego + granola", kcal:500, p:28, c:50, f:22,
+      ing:["2 yogures griegos","60g granola","Nueces","Miel","Fruta"],
+      tip:"Sencillo y efectivo."},
+    {slot:"Comida", name:"Garbanzos guisados con chorizo", kcal:780, p:42, c:88, f:24,
+      ing:["150g garbanzos","Chorizo y costilla adobada","Patata y pimentón","Sofrito de ajo y cebolla","Pan para mojar"],
+      tip:"El pimentón y el chorizo le dan un guiso de cuchara con mucho sabor. Domingueo total."},
+    {slot:"Merienda", name:"Tostadas + crema cacahuete + batido", kcal:540, p:34, c:56, f:18,
+      ing:["2 tostadas","Crema de cacahuete","Plátano en rodajas","Batido de proteína"],
+      tip:"Prepara ya el cuerpo para la semana de entreno."},
+    {slot:"Cena", name:"Wrap de pollo + queso + ensalada", kcal:660, p:44, c:54, f:26,
+      ing:["2 tortillas grandes","200g pollo","Queso","Aguacate","Ensalada con AOVE"],
+      tip:"Cena ligera de digerir pero completa. A dormir 8h."}
+  ]}
+];
+
+const TARGET_KCAL = 3300, TARGET_PROT = 140;
+const STORE = "bulk_plan_v1";
+
+let state = load();
+let activeDay = 0;
+
+function load(){
+  try{ return JSON.parse(localStorage.getItem(STORE)) || {checks:{}, weight:59}; }
+  catch(e){ return {checks:{}, weight:59}; }
+}
+function save(){ localStorage.setItem(STORE, JSON.stringify(state)); }
+
+// ---- WEIGHT ----
+function renderWeight(){
+  const w = state.weight || 59;
+  document.getElementById("curWeight").innerHTML = w + '<span style="font-size:20px;color:var(--muted)">kg</span>';
+  const gained = Math.max(0, w - 59);
+  const pct = Math.min(100, Math.max(0, ((w-59)/(70-59))*100));
+  document.getElementById("wBar").style.width = pct + "%";
+  document.getElementById("wGained").textContent = (gained>=0?"+":"") + gained.toFixed(1) + " kg";
+}
+document.getElementById("wSave").addEventListener("click", ()=>{
+  const v = parseFloat(document.getElementById("wInput").value);
+  if(!isNaN(v) && v>0){ state.weight = v; save(); renderWeight(); document.getElementById("wInput").value=""; }
+});
+
+// ---- DAY NAV ----
+function renderNav(){
+  const nav = document.getElementById("dayNav");
+  nav.innerHTML = "";
+  DAYS.forEach((d,i)=>{
+    const done = isDayDone(i);
+    const chip = document.createElement("div");
+    chip.className = "daychip" + (i===activeDay?" active":"") + (done?" done":"");
+    chip.innerHTML = `<div class="dn">DÍA</div><div class="dd">${i+1}</div>`;
+    chip.addEventListener("click", ()=>{ activeDay=i; renderNav(); renderDay(); });
+    nav.appendChild(chip);
+  });
+}
+function isDayDone(i){
+  return DAYS[i].meals.every((_,mi)=> state.checks[i+"-"+mi]);
+}
+
+// ---- DAY ----
+function renderDay(){
+  const d = DAYS[activeDay];
+  document.getElementById("dayTitle").textContent = d.name;
+  const tag = document.getElementById("dayTag");
+  if(d.type==="gym"){ tag.className="daytag tag-gym"; tag.textContent="🏋 Día de gym"; }
+  else{ tag.className="daytag tag-rest"; tag.textContent="😴 Descanso"; }
+
+  const mealsEl = document.getElementById("meals");
+  mealsEl.innerHTML = "";
+  d.meals.forEach((m,mi)=>{
+    const key = activeDay+"-"+mi;
+    const checked = !!state.checks[key];
+    const el = document.createElement("div");
+    el.className = "meal" + (checked?" checked":"");
+    el.innerHTML = `
+      <div class="meal-head">
+        <div class="check" data-check="${key}">
+          <svg viewBox="0 0 24 24"><polyline points="4 12 10 18 20 6"></polyline></svg>
+        </div>
+        <div class="meal-info">
+          <div class="meal-slot">${m.slot}</div>
+          <div class="meal-name">${m.name}</div>
+          <div class="meal-macros">
+            <span class="m-kcal">${m.kcal} kcal</span>
+            <span class="m-p">P ${m.p}g</span>
+            <span class="m-c">C ${m.c}g</span>
+            <span class="m-f">G ${m.f}g</span>
+          </div>
+        </div>
+        <div class="expand" data-exp="${mi}">⌄</div>
+      </div>
+      <div class="meal-body">
+        <div class="meal-body-inner">
+          <ul class="ingredients">${m.ing.map(x=>`<li>${x}</li>`).join("")}</ul>
+          <div class="meal-tip">💡 ${m.tip}</div>
+        </div>
+      </div>`;
+    mealsEl.appendChild(el);
+
+    // toggle expand (click on head but not on check)
+    el.querySelector(".meal-head").addEventListener("click",(e)=>{
+      if(e.target.closest("[data-check]")) return;
+      el.classList.toggle("open");
+    });
+    // check toggle
+    el.querySelector("[data-check]").addEventListener("click",(e)=>{
+      e.stopPropagation();
+      state.checks[key] = !state.checks[key];
+      save(); renderDay(); renderNav();
+    });
+  });
+
+  // creatine toggle (per day)
+  const cr = document.getElementById("creatine");
+  const ckey = "cr-"+activeDay;
+  cr.classList.toggle("on", !!state.checks[ckey]);
+  cr.querySelector(".cchk").onclick = ()=>{
+    state.checks[ckey] = !state.checks[ckey];
+    save(); cr.classList.toggle("on", !!state.checks[ckey]);
+  };
+
+  renderDayProgress();
+}
+
+function renderDayProgress(){
+  const d = DAYS[activeDay];
+  let k=0,p=0;
+  d.meals.forEach((m,mi)=>{ if(state.checks[activeDay+"-"+mi]){ k+=m.kcal; p+=m.p; }});
+  document.getElementById("progKcal").style.width = Math.min(100,(k/TARGET_KCAL)*100)+"%";
+  document.getElementById("progProt").style.width = Math.min(100,(p/TARGET_PROT)*100)+"%";
+  document.getElementById("valKcal").textContent = k+" / "+TARGET_KCAL;
+  document.getElementById("valProt").textContent = p+" / "+TARGET_PROT+"g";
+}
+
+document.getElementById("resetDay").addEventListener("click", ()=>{
+  DAYS[activeDay].meals.forEach((_,mi)=> delete state.checks[activeDay+"-"+mi]);
+  save(); renderDay(); renderNav();
+});
+
+// INIT
+renderWeight();
+renderNav();
+renderDay();
+</script>
+</body>
+</html>
